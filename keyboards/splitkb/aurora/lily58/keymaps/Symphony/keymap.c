@@ -48,7 +48,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                      KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,
         KC_LSFT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                      KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LCTL, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    MO(_NAV),  KC_NEXT_LAYER, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLASH, KC_RCTL,
-                                   KC_LALT, MO(_NUM), MO(_SYM), KC_ENT,             KC_SPACE, KC_BSPC, KC_RALT, KC_RGUI
+                                   MO(_FN), MO(_NUM), MO(_SYM), KC_ENT,             KC_SPACE, KC_BSPC, KC_RALT, KC_RGUI
     ),
 
     [_FN] = LAYOUT(
@@ -80,7 +80,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,                         KC_7,       KC_8,       KC_9,       KC_KP_MINUS,    KC_NO,   KC_NO,
         KC_LSFT,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,                         KC_4,       KC_5,       KC_6,       KC_KP_PLUS,     KC_NO,   KC_NO,
         KC_LCTL,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  MO(_NAV),    KC_NEXT_LAYER,   KC_1,   KC_2,   KC_3,   KC_KP_ENTER,   KC_NO,   KC_NO,
-                                    KC_NO,   KC_NO,   KC_NO,   KC_NO,               KC_ENTER,   KC_0,   KC_KP_DOT,   KC_NO
+                                    KC_NO,   KC_NO,   KC_NO,   KC_ENT,               KC_SPACE,   KC_0,   KC_KP_DOT,   KC_NO
     ),
 
     [_SYM] = LAYOUT(
@@ -172,7 +172,7 @@ bool rgb_matrix_indicators_user(void) {
             };
             break;
         default:
-            rgb_matrix_set_color_all(34, 139, 34); // Default all to a soft green to represent the lush grass of the Shire.
+            rgb_matrix_set_color_all(128, 17, 0); // A dark, fiery red-orange to represent the lava and intensity of Mordor.
             for (uint8_t i = 0; i < DRIVER_LED_TOTAL; i++) {
                 if (i < 4) {
                     rgb_matrix_set_color(i, 255, 223, 0);
