@@ -16,10 +16,40 @@
 #include QMK_KEYBOARD_H
 #include "helpers.h"
 #include "effects/fire_effect.h"
+#include "raw_hid.h"
 
 #ifdef OS_DETECTION_ENABLE
   #include "os_detection.h"
 #endif
+
+// ─── Lilly Peak overlay integration ──────────────────────────────────────────
+// Push the active layer to the Lilly Peak desktop overlay over Raw HID.
+// Protocol:
+//   KB → Host: 0x01 <layer>   "layer is now <layer>"
+//   Host → KB: 0x02            "request current layer state"
+#define LP_MSG_LAYER_CHANGE  0x01
+#define LP_MSG_REQUEST_LAYER 0x02
+#define LP_HID_BUF_SIZE      32
+
+static void lp_send_layer(uint8_t layer) {
+    uint8_t buf[LP_HID_BUF_SIZE] = {0};
+    buf[0] = LP_MSG_LAYER_CHANGE;
+    buf[1] = layer;
+    raw_hid_send(buf, LP_HID_BUF_SIZE);
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    lp_send_layer(get_highest_layer(state));
+    return state;
+}
+
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    if (length < 1) return;
+    if (data[0] == LP_MSG_REQUEST_LAYER) {
+        lp_send_layer(get_highest_layer(layer_state));
+    }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 enum layers {
     _DEFAULT,
@@ -52,8 +82,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_FN] = LAYOUT(
-        RGB_TOG, RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI,                       BL_TOGG, BL_STEP, BL_ON,   BL_UP,   KC_NO,   KC_NO,
-        KC_NO,   RGB_HUD, RGB_SAD, RGB_VAD, KC_NO,   KC_NO,                         BL_BRTG, BL_OFF,  BL_DOWN, KC_NO,   KC_NO,   KC_NO,
+        RM_TOGG, RM_NEXT, RM_HUEU, RM_SATU, RM_VALU, RM_SPDU,                       KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   RM_HUED, RM_SATD, RM_VALD, KC_NO,   RM_SPDD,                       KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,                         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   MO(_NAV),    KC_NEXT_LAYER,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
                                     KC_NO,   KC_NO,   EE_CLR,   QK_BOOT,               KC_NO,   KC_NO,   KC_NO,   KC_NO
